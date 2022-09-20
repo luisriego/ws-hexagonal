@@ -1,8 +1,8 @@
 version: '3.5'
 
 services:
-  modular-monolith-example-web:
-    container_name: modular-monolith-example-web
+  mm-web:
+    container_name: mm-web
     build:
       context: ./docker/nginx
       args:
@@ -12,12 +12,12 @@ services:
     volumes:
       - ./public:/appdata/www/public
     depends_on:
-      - modular-monolith-example-app
+      - mm-app
     networks:
-      - modular-monolith-example-network
+      - mm-network
 
-  modular-monolith-example-app:
-    container_name: modular-monolith-example-app
+  mm-app:
+    container_name: mm-app
     build:
       context: ./docker/php
       args:
@@ -31,15 +31,15 @@ services:
     environment:
       XDEBUG_CLIENT_HOST: host.docker.internal
       XDEBUG_CLIENT_PORT: 9003
-      PHP_IDE_CONFIG: serverName=modular-monolith-example-server
+      PHP_IDE_CONFIG: serverName=mm-server
     networks:
-      - modular-monolith-example-network
+      - mm-network
     depends_on:
-      - modular-monolith-example-mysql
+      - mm-mysql
 
-  modular-monolith-example-mysql:
+  mm-mysql:
     # platform: linux/x86_64 # Uncomment this for Apple Silicon machines
-    container_name: modular-monolith-example-mysql
+    container_name: mm-mysql
     build:
       context: ./docker/database
     ports:
@@ -48,13 +48,13 @@ services:
       MYSQL_DATABASE: customer_db
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - modular-monolith-example-mysql-data:/var/lib/mysql
+      - mm-mysql-data:/var/lib/mysql
     networks:
-      - modular-monolith-example-network
+      - mm-network
     command: [ 'mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci' ]
 
 networks:
-  modular-monolith-example-network:
+  mm-network:
 
 volumes:
-  modular-monolith-example-mysql-data:
+  mm-mysql-data:
